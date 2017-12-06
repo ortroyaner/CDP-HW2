@@ -6,6 +6,22 @@
 #include <stdio.h>
 #include <math.h>
 
+int stages(int size){
+    int s=0;
+    for(int i=size; i>1; i=i/2){
+        s++;
+    }
+    return s;
+}
+
+void fast_parallel_walsh(int* vec, int vecSize)
+{
+    // if the vector is of size 1 or less (0), we dont need to do anything and we can just return it as is
+    if(vecSize<=1) return;
+
+    
+}
+
 int numberOfSetBits(uint32_t i)
 {
     i = i - ((i >> 1) & 0x55555555);
@@ -20,10 +36,6 @@ int* createCol(int colNum, int vecSize){
         col[i] = (numberOfSetBits(i&colNum) % 2 == 0)*2 - 1;
     }
     return col;
-}
-
-void fast_parallel_walsh(int* vec, int vecSize)
-{
 }
 
 void simple_parallel_walsh(int* vec, int vecSize)
