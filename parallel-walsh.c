@@ -8,23 +8,25 @@ void fast_parallel_walsh(int* vec, int vecSize)
 
     // start to divide the original vecSize into 2 on every step, until we can't divide any longer
     int partition = vecSize >> 1;
-    while(partition>1){
-        //how many sections do we have to go over in this iteration
-        int sections = vecSize/partition;
+    //how many sections do we have to go over in this iteration
+    int sections = 1;
 
+    while(partition>0){
         // go over all sections - this section can be parallel!
-        //#pragma omp parallel for schedule(static)
-        for(int i=1; i<sections; i++) {
-            // in here we want to have two indexes to vec: 0 and 0+partitionSize/2
-            int secondPart = i*partition;
-
+        #pragma omp parallel for schedule(static)
+        for(int i=0; i<sections; i++) {
             // go over all the current vector to calculate the new values
             for (int j = 0; j < partition; j++) {
-                vec[j] = vec[j] + vec[j + secondPart];
-                vec[j + secondPart] = vec[j] - vec[j + secondPart];
+                // in here we want to have two indexes to vec: 0 and 0+partitionSize/2
+                int firstPart = (i<<1)*partition+j;
+                int secondPart = firstPart+partition;
+                int tmp = vec[firstPart];
+                vec[firstPart] = tmp + vec[secondPart];
+                vec[secondPart] = tmp - vec[secondPart];
             }
         }
         partition >>= 1;
+        sections <<= 1;
     }
 }
 
