@@ -6,20 +6,19 @@
 #include <stdio.h>
 #include <math.h>
 
-int stages(int size){
-    int s=0;
-    for(int i=size; i>1; i=i/2){
-        s++;
-    }
-    return s;
-}
-
 void fast_parallel_walsh(int* vec, int vecSize)
 {
     // if the vector is of size 1 or less (0), we dont need to do anything and we can just return it as is
     if(vecSize<=1) return;
 
-    
+    // start to divide the original vecSize into 2 on every step, until we can't divide any longer
+    int partition = vecSize >> 1;
+    while(partition>1){
+
+
+
+        partition >>= 1;
+    }
 }
 
 int numberOfSetBits(uint32_t i)
