@@ -55,8 +55,9 @@ void simple_parallel_walsh(int* vec, int vecSize)
 
     // let's calc the value in each cell in the vector
     //in this section, we can create multiple threads to compute this part
-    //#pragma omp for schedule(static)
+    #pragma omp for schedule(static)
     for(int i=0; i<vecSize; i++){
+        tmpRes[i]=0;
         //first, create the right col from the hadamard matrix
         int* col = createCol(i,vecSize);
 
@@ -71,8 +72,8 @@ void simple_parallel_walsh(int* vec, int vecSize)
 
     //move the results from the tmpVec to vec, and fre tmpVec
     //all threads must finish calculating before moving to copy the results, and free-ing the tmpRes vector
-    //#pragma omp barrier
-    //#pragma omp for schedule(static)
+    #pragma omp barrier
+    #pragma omp for schedule(static)
     for(int i=0; i<vecSize; i++){
         vec[i]=tmpRes[i];
     }
