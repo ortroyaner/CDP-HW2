@@ -13,7 +13,7 @@ void fast_parallel_walsh(int* vec, int vecSize)
 
     while(partition>0){
         // go over all sections - this section can be parallel!
-        #pragma omp parallel for schedule(static)
+        #pragma omp parallel for schedule(static) collapse(2)
         for(register int i=0; i<sections; i++) {
             // go over all the current vector to calculate the new values
             for (register int j = 0; j < partition; j++) {
