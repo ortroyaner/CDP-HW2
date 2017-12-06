@@ -1,10 +1,5 @@
 #include <stdlib.h>
 #include <stdint.h>
-#include <string.h>
-#include <omp.h>
-#include <stdbool.h>
-#include <stdio.h>
-#include <math.h>
 
 void fast_parallel_walsh(int* vec, int vecSize)
 {
@@ -14,9 +9,21 @@ void fast_parallel_walsh(int* vec, int vecSize)
     // start to divide the original vecSize into 2 on every step, until we can't divide any longer
     int partition = vecSize >> 1;
     while(partition>1){
+        //how many sections do we have to go over in this iteration
+        int sections = vecSize/partition;
 
+        // go over all sections - this section can be parallel!
+        //#pragma omp parallel for schedule(static)
+        for(int i=1; i<sections; i++) {
+            // in here we want to have two indexes to vec: 0 and 0+partitionSize/2
+            int secondPart = i*partition;
 
-
+            // go over all the current vector to calculate the new values
+            for (int j = 0; j < partition; j++) {
+                vec[j] = vec[j] + vec[j + secondPart];
+                vec[j + secondPart] = vec[j] - vec[j + secondPart];
+            }
+        }
         partition >>= 1;
     }
 }
@@ -48,7 +55,7 @@ void simple_parallel_walsh(int* vec, int vecSize)
 
     // let's calc the value in each cell in the vector
     //in this section, we can create multiple threads to compute this part
-    #pragma omp for schedule(static)
+    //#pragma omp for schedule(static)
     for(int i=0; i<vecSize; i++){
         //first, create the right col from the hadamard matrix
         int* col = createCol(i,vecSize);
@@ -64,8 +71,8 @@ void simple_parallel_walsh(int* vec, int vecSize)
 
     //move the results from the tmpVec to vec, and fre tmpVec
     //all threads must finish calculating before moving to copy the results, and free-ing the tmpRes vector
-    #pragma omp barrier
-    #pragma omp for schedule(static)
+    //#pragma omp barrier
+    //#pragma omp for schedule(static)
     for(int i=0; i<vecSize; i++){
         vec[i]=tmpRes[i];
     }
